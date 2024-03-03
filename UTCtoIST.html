@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTCtoIST Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.css">
+    <style>
+body{
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        transition: background-color 0.5s ease;
+    }
+
+    .converter-container {
+        text-align: center;
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.61);
+        transition: box-shadow 0.5s ease;
+    }
+
+    label {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #12cedb;
+        color: #ffffffe3;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin: 10px;
+    }
+
+    #result {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    #timezones {
+        display: flex;
+        justify-content: center;
+    }
+
+    #darkModeToggle {
+        background-color: #333;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    #darkModeToggle:hover {
+        background-color: #555;
+    }
+
+    .dark-mode {
+        background-color: #333;
+        color: #fff;
+    }
+
+    .dark-mode .converter-container {
+        background-color: #555;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+</style>
+</head>
+<body>
+    
+
+<div class="converter-container">
+<div>
+    <label for="UTC to IST Coverter"></label>
+</div>
+
+<label for="utcTime">Select UTC Time:</label>
+<input type="text" id="utcTime" placeholder="Click to select time" required>
+<button onclick="convertTime()">Convert</button>
+<div id="result"></div>
+<div id="timezones"></div>
+<button onclick="reverseOrder()">Reverse Timezones</button>
+<button id="darkModeToggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+<button onclick="generateShareableLink()">Get Shareable Link</button>
+<button onclick="scheduleGoogleMeet()">Schedule Google Meet</button>
+<div><footer>
+    <p>&copy; Aman kumar_20BTRCD001.</p>
+</footer></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.3/flatpickr.min.js"></script>
+<script>
+    
+flatpickr("#utcTime", {
+    enableTime: true,
+    dateFormat: "Y-m-dTH:i:S",
+    time_24hr: true,
+});
+
+const timezones = ['UTC', 'IST', 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
+let darkMode = false;
+
+function convertTime() {
+    const utcTime = document.getElementById('utcTime').value;
+    const utcDateTime = new Date(utcTime);
+
+    const resultElement = document.getElementById('result');
+    resultElement.textContent = '';
+
+    timezones.forEach(timezone => {
+        const convertedDateTime = new Date(utcDateTime.toLocaleString('en-US', { timeZone: timezone }));
+        resultElement.innerHTML += `<p>${timezone}: ${convertedDateTime.toLocaleString()}</p>`;
+    });
+}
+
+function reverseOrder() {
+    timezones.reverse();
+    convertTime();
+}
+
+function toggleDarkMode() {
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark-mode', darkMode);
+    const converterContainer = document.querySelector('.converter-container');
+    converterContainer.classList.toggle('dark-mode', darkMode);
+}
+function generateShareableLink() {
+            const utcTime = document.getElementById('utcTime').value;
+            const url = window.location.href.split('?')[0];  // Remove existing query parameters
+            const shareableLink = `${url}?time=${encodeURIComponent(utcTime)}`;
+            
+            // Display the shareable link in the HTML element
+            const shareableLinkElement = document.getElementById('shareableLink');
+            shareableLinkElement.textContent = `Shareable Link: ${shareableLink}`;
+}
+function scheduleGoogleMeet() {
+    const utcTime = document.getElementById('utcTime').value;
+    const meetStartTime = new Date(utcTime);
+    const meetEndTime = new Date(meetStartTime.getTime() + 2 * 60 * 60 * 1000);  // Adding 2 hours
+
+    const formattedStartTime = meetStartTime.toISOString().replace(/\.\d+Z$/, '');
+    const formattedEndTime = meetEndTime.toISOString().replace(/\.\d+Z$/, '');
+
+    const googleMeetLink = `https://meet.google.com/new?authuser=0&hl=en&pli=1&ts=utc${formattedStartTime}utc${formattedEndTime}`;
+    window.open(googleMeetLink, '_blank');
+}
+
+</script>
+
+</body>
+</html>
